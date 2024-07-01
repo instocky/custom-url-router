@@ -2,7 +2,7 @@
 /*
 Plugin Name: Custom URL Router
 Description: Handles custom URL routes with case sensitivity
-Version: 0.0.701.1111
+Version: 0.0.701.1125
 Author: IC
 */
 
@@ -32,6 +32,17 @@ if (!class_exists('IC_CustomURLRouter')) {
         ];
 
         /**
+         * Массив слагов страниц, где нужно подключить Tailwind и Alpine.
+         *
+         * @var array
+         */
+        private static $tailwind_alpine_slugs = [
+            'parent/slugRegistry',
+            'parent/edustandart',
+            // Добавьте другие слаги по необходимости
+        ];
+
+        /**
          * Инициализация плагина.
          * Подключает все необходимые хуки.
          *
@@ -43,6 +54,7 @@ if (!class_exists('IC_CustomURLRouter')) {
             add_filter('request', [self::class, 'handle_custom_routes']);
             add_action('template_redirect', [self::class, 'redirect_incorrect_case']);
             add_action('template_redirect', [self::class, 'handle_redirects']);
+            add_action('wp_enqueue_scripts', [self::class, 'enqueue_tailwind_alpine']);
         }
 
         /**
@@ -92,7 +104,7 @@ if (!class_exists('IC_CustomURLRouter')) {
                     exit;
                 }
             }
-        }        
+        }
 
         /**
          * Обрабатывает редиректы на основе массива $redirects
@@ -109,6 +121,20 @@ if (!class_exists('IC_CustomURLRouter')) {
                     wp_redirect(home_url($to), 301);
                     exit;
                 }
+            }
+        }
+
+        /**
+         * Подключает Tailwind CSS и Alpine.js на указанных страницах
+         */
+        public static function enqueue_tailwind_alpine()
+        {
+            global $wp;
+            $current_slug = trailingslashit($wp->request);
+
+            if (in_array(rtrim($current_slug, '/'), self::$tailwind_alpine_slugs)) {
+                wp_enqueue_style('tailwindcss', 'https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css', [], null);
+                wp_enqueue_script('alpinejs', 'https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js', [], null, true);
             }
         }
 
