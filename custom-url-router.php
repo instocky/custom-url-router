@@ -2,7 +2,7 @@
 /*
 Plugin Name: Custom URL Router
 Description: Handles custom URL routes with case sensitivity
-Version: 0.0.701.1040
+Version: 0.0.701.1111
 Author: IC
 */
 
@@ -21,6 +21,17 @@ if (!class_exists('IC_CustomURLRouter')) {
         ];
 
         /**
+         * Массив редиректов.
+         * Ключ - исходный URL, значение - целевой URL.
+         *
+         * @var array
+         */
+        private static $redirects = [
+            'parent/' => 'parent/slugRegistry/',
+            // Добавьте здесь другие редиректы при необходимости
+        ];
+
+        /**
          * Инициализация плагина.
          * Подключает все необходимые хуки.
          *
@@ -31,7 +42,7 @@ if (!class_exists('IC_CustomURLRouter')) {
             add_action('init', [self::class, 'register_routes']);
             add_filter('request', [self::class, 'handle_custom_routes']);
             add_action('template_redirect', [self::class, 'redirect_incorrect_case']);
-            add_action('template_redirect', [self::class, 'redirect_parent_to_slugregistry']);
+            add_action('template_redirect', [self::class, 'handle_redirects']);
         }
 
         /**
@@ -81,22 +92,23 @@ if (!class_exists('IC_CustomURLRouter')) {
                     exit;
                 }
             }
-        }
+        }        
 
         /**
-         * Выполняет редирект с /parent/ на /parent/slugregistry/
+         * Обрабатывает редиректы на основе массива $redirects
          *
          * @return void
          */
-        public static function redirect_parent_to_slugregistry()
+        public static function handle_redirects()
         {
             global $wp;
-            $current_url = trailingslashit(home_url($wp->request));
-            $parent_url = trailingslashit(home_url('parent'));
+            $current_url = trailingslashit($wp->request);
 
-            if ($current_url === $parent_url) {
-                wp_redirect(home_url('parent/slugRegistry/'), 301);
-                exit;
+            foreach (self::$redirects as $from => $to) {
+                if ($current_url === $from) {
+                    wp_redirect(home_url($to), 301);
+                    exit;
+                }
             }
         }
 
