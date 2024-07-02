@@ -43,7 +43,7 @@ class PluginSettings
 
         add_settings_field(
             'use_cdn',
-            'Use CDN for assets',
+            'Использовать CDN для ресурсов',
             [$this, 'use_cdn_callback'],
             'custom-url-router',
             'custom_url_router_main'
@@ -67,7 +67,7 @@ class PluginSettings
         $options = get_option($this->option_name);
         $use_cdn = isset($options['use_cdn']) ? $options['use_cdn'] : true;
         echo '<input type="checkbox" id="use_cdn" name="' . $this->option_name . '[use_cdn]" value="1" ' . checked($use_cdn, true, false) . ' />';
-        echo '<label for="use_cdn">Use CDN for loading Tailwind and Alpine.js</label>';
+        echo '<label for="use_cdn">Использовать CDN для загрузки Tailwind и Alpine.js</label>';
     }
 
     public function render_settings_page()
