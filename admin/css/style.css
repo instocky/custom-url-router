@@ -5,3 +5,95 @@
 .custom-url-router-admin .form-table td {
     vertical-align: middle;
 }
+
+/* 0703-1554 */
+.custom-url-router-container {
+    display: flex;
+    margin-top: 20px;
+}
+
+.custom-url-router-sidebar {
+    width: 200px;
+    margin-right: 20px;
+}
+
+.custom-url-router-content {
+    flex: 1;
+}
+
+.custom-url-router-menu {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.custom-url-router-menu-item {
+    margin-bottom: 10px;
+}
+
+.custom-url-router-menu-item a {
+    display: block;
+    padding: 10px;
+    text-decoration: none;
+    color: #23282d;
+    background-color: #f1f1f1;
+    border-left: 4px solid transparent;
+}
+
+.custom-url-router-menu-item.active a,
+.custom-url-router-menu-item a:hover {
+    background-color: #fff;
+    border-left-color: #0073aa;
+}
+
+.custom-url-router-section {
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #e5e5e5;
+}
+
+/* Стили для переключателей */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 36px;
+    height: 20px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .2s;
+    border-radius: 20px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    transition: .2s;
+    border-radius: 50%;
+}
+
+input:checked+.slider {
+    background-color: #0073aa;
+}
+
+input:checked+.slider:before {
+    transform: translateX(16px);
+}

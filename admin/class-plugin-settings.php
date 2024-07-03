@@ -52,13 +52,40 @@ class PluginSettings
      */
     public function register_settings()
     {
-        register_setting($this->option_name, $this->option_name, [$this, 'sanitize_settings']);
+        register_setting($this->option_name, $this->option_name);
 
+        // Content Management Section
         add_settings_section(
-            'custom_url_router_main',
-            'Main Settings',
-            [$this, 'section_callback'],
-            'custom-url-router'
+            'custom_url_router_content',
+            '',
+            null,
+            'custom-url-router-content'
+        );
+
+        add_settings_field(
+            'custom_content_types',
+            'Custom Content Types',
+            [$this, 'render_switch_field'],
+            'custom-url-router-content',
+            'custom_url_router_content',
+            ['label_for' => 'custom_content_types', 'description' => 'Enable custom content types management.']
+        );
+
+        // Admin Interface Section
+        add_settings_section(
+            'custom_url_router_admin',
+            '',
+            null,
+            'custom-url-router-admin'
+        );
+
+        add_settings_field(
+            'admin_customization',
+            'Admin Customization',
+            [$this, 'render_switch_field'],
+            'custom-url-router-admin',
+            'custom_url_router_admin',
+            ['label_for' => 'admin_customization', 'description' => 'Enable admin interface customization.']
         );
     }
 
@@ -88,7 +115,7 @@ class PluginSettings
     public function render_settings_page()
     {
         if (!current_user_can('manage_options')) {
-            wp_die(__('You do not have sufficient permissions to access this page.'));
+            return;
         }
 
         if (isset($_GET['settings-updated'])) {
@@ -118,7 +145,21 @@ class PluginSettings
         wp_enqueue_script('alpinejs', 'https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js', [], '3.0.0', true);
 
 
-        // wp_enqueue_style('custom-url-router-admin', plugin_dir_url(__FILE__) . 'css/style.css', [], '1.0.0');
-        // wp_enqueue_script('custom-url-router-admin', plugin_dir_url(__FILE__) . 'js/script.js', ['jquery'], '1.0.0', true);
+        wp_enqueue_style('custom-url-router-admin', plugin_dir_url(__FILE__) . 'css/style.css', [], '1.0.0');
+        wp_enqueue_script('custom-url-router-admin', plugin_dir_url(__FILE__) . 'js/script.js', ['jquery'], '1.0.0', true);
+    }
+
+    public function render_switch_field($args)
+    {
+        $options = get_option($this->option_name);
+        $field_id = $args['label_for'];
+        $checked = isset($options[$field_id]) ? $options[$field_id] : false;
+        ?>
+        <label class="switch">
+            <input type="checkbox" id="<?php echo esc_attr($field_id); ?>" name="<?php echo esc_attr($this->option_name . '[' . $field_id . ']'); ?>" <?php checked($checked, true); ?>>
+            <span class="slider"></span>
+        </label>
+        <p class="description"><?php echo esc_html($args['description']); ?></p>
+        <?php
     }
 }
