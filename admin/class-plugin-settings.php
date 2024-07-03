@@ -5,8 +5,17 @@ if (!defined('ABSPATH')) {
 
 class PluginSettings
 {
+    /**
+     * Имя опции для хранения настроек плагина.
+     *
+     * @var string
+     */
     private $option_name = 'custom_url_router_settings';
 
+    /**
+     * Конструктор класса.
+     * Инициализирует хуки для добавления страницы настроек и регистрации настроек.
+     */
     public function __construct()
     {
         add_action('admin_menu', [$this, 'add_settings_page']);
@@ -14,11 +23,18 @@ class PluginSettings
         add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_scripts']);
     }
 
+    /**
+     * Инициализация дополнительных параметров плагина.
+     * В настоящее время не используется, но может быть полезен для будущих расширений.
+     */
     public function init()
     {
         // Может быть использовано для дополнительной инициализации в будущем
     }
 
+    /**
+     * Добавляет страницу настроек в меню WordPress.
+     */
     public function add_settings_page()
     {
         add_options_page(
@@ -30,6 +46,10 @@ class PluginSettings
         );
     }
 
+    /**
+     * Регистрирует настройки плагина.
+     * Создает секцию настроек и добавляет поля для настройки.
+     */
     public function register_settings()
     {
         register_setting($this->option_name, $this->option_name, [$this, 'sanitize_settings']);
@@ -40,36 +60,31 @@ class PluginSettings
             [$this, 'section_callback'],
             'custom-url-router'
         );
-
-        add_settings_field(
-            'use_cdn',
-            'Использовать CDN для ресурсов',
-            [$this, 'use_cdn_callback'],
-            'custom-url-router',
-            'custom_url_router_main'
-        );
     }
 
+    /**
+     * Санитизирует введенные пользователем настройки.
+     *
+     * @param array $input Массив введенных пользователем настроек.
+     * @return array Санитизированный массив настроек.
+     */
     public function sanitize_settings($input)
     {
-        $new_input = [];
-        $new_input['use_cdn'] = isset($input['use_cdn']) ? (bool) $input['use_cdn'] : false;
-        return $new_input;
+        return $input;
     }
 
+    /**
+     * Выводит описание для секции настроек.
+     */
     public function section_callback()
     {
         echo '<p>Main settings for Custom URL Router</p>';
     }
 
-    public function use_cdn_callback()
-    {
-        $options = get_option($this->option_name);
-        $use_cdn = isset($options['use_cdn']) ? $options['use_cdn'] : true;
-        echo '<input type="checkbox" id="use_cdn" name="' . $this->option_name . '[use_cdn]" value="1" ' . checked($use_cdn, true, false) . ' />';
-        echo '<label for="use_cdn">Использовать CDN для загрузки Tailwind и Alpine.js</label>';
-    }
-
+    /**
+     * Отображает страницу настроек плагина.
+     * Проверяет права доступа и выводит форму с настройками.
+     */
     public function render_settings_page()
     {
         if (!current_user_can('manage_options')) {
@@ -85,14 +100,25 @@ class PluginSettings
         require_once plugin_dir_path(__FILE__) . 'views/settings-page.php';
     }
 
-
+    /**
+     * Подключает стили и скрипты для страницы настроек в админ-панели.
+     *
+     * @param string $hook Текущий хук страницы админ-панели.
+     */
     public function enqueue_admin_scripts($hook)
     {
         if ('settings_page_custom-url-router' !== $hook) {
             return;
         }
 
-        wp_enqueue_style('custom-url-router-admin', plugin_dir_url(__FILE__) . 'css/style.css', [], '1.0.0');
-        wp_enqueue_script('custom-url-router-admin', plugin_dir_url(__FILE__) . 'js/script.js', ['jquery'], '1.0.0', true);
+        // Подключаем Tailwind CSS из CDN
+        wp_enqueue_style('tailwindcss', 'https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css', [], '2.2.19');
+
+        // Подключаем Alpine.js из CDN
+        wp_enqueue_script('alpinejs', 'https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js', [], '3.0.0', true);
+
+
+        // wp_enqueue_style('custom-url-router-admin', plugin_dir_url(__FILE__) . 'css/style.css', [], '1.0.0');
+        // wp_enqueue_script('custom-url-router-admin', plugin_dir_url(__FILE__) . 'js/script.js', ['jquery'], '1.0.0', true);
     }
 }

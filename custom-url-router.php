@@ -2,7 +2,7 @@
 /*
 Plugin Name: Custom URL Router
 Description: Handles custom URL routes with case sensitivity
-Version: 0.0.701.2144
+Version: 0.0.703.1500
 Author: IC
 */
 
@@ -18,7 +18,8 @@ require_once plugin_dir_path(__FILE__) . 'includes/class-custom-url-router.php';
 require_once plugin_dir_path(__FILE__) . 'admin/class-plugin-settings.php';
 
 // Инициализация плагина
-function run_custom_url_router() {
+function run_custom_url_router()
+{
     $plugin = new IC_CustomURLRouter();
     $plugin->init();
 

@@ -117,17 +117,9 @@ class IC_CustomURLRouter
          $current_slug = trailingslashit($wp->request);
  
          if (in_array(rtrim($current_slug, '/'), $this->tailwind_alpine_slugs)) {
-             $options = get_option('custom_url_router_settings');
-             $use_cdn = isset($options['use_cdn']) ? $options['use_cdn'] : true;
- 
-             if ($use_cdn) {
-                 wp_enqueue_style('tailwindcss', 'https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css', [], null);
-                 wp_enqueue_script('alpinejs', 'https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js', [], null, true);
-             } else {
-                wp_enqueue_style('tailwindcss', plugin_dir_url(dirname(__FILE__)) . 'assets/css/tailwind.min.css', [], '2.2.19');
-                 wp_enqueue_script('alpinejs', plugin_dir_url(dirname(__FILE__)) . 'assets/js/alpine.min.js', [], '3.0.0', true);
-             }
-         }
+            wp_enqueue_style('tailwindcss', 'https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css', [], null);
+            wp_enqueue_script('alpinejs', 'https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js', [], null, true);
+        }
      }
     /**
      * Активация плагина.
