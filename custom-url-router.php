@@ -2,7 +2,7 @@
 /*
 Plugin Name: Custom URL Router
 Description: Handles custom URL routes with case sensitivity
-Version: 0.0.703.1600
+Version: 0.0.703.1800
 Author: IC
 */
 

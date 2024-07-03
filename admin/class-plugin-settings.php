@@ -21,6 +21,7 @@ class PluginSettings
         add_action('admin_menu', [$this, 'add_settings_page']);
         add_action('admin_init', [$this, 'register_settings']);
         add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_scripts']);
+        add_action('wp_ajax_add_redirect_field', [$this, 'add_redirect_field']);
     }
 
     /**
@@ -86,6 +87,22 @@ class PluginSettings
             'custom-url-router-admin',
             'custom_url_router_admin',
             ['label_for' => 'admin_customization', 'description' => 'Enable admin interface customization.']
+        );
+
+        add_settings_field(
+            'redirects',
+            'Redirects',
+            [$this, 'render_redirects_field'],
+            'custom-url-router-redirects',
+            'custom_url_router_redirects'
+        );
+
+        // Redirects Section
+        add_settings_section(
+            'custom_url_router_redirects',
+            '',
+            null,
+            'custom-url-router-redirects'
         );
     }
 
@@ -154,12 +171,49 @@ class PluginSettings
         $options = get_option($this->option_name);
         $field_id = $args['label_for'];
         $checked = isset($options[$field_id]) ? $options[$field_id] : false;
-        ?>
+?>
         <label class="switch">
             <input type="checkbox" id="<?php echo esc_attr($field_id); ?>" name="<?php echo esc_attr($this->option_name . '[' . $field_id . ']'); ?>" <?php checked($checked, true); ?>>
             <span class="slider"></span>
         </label>
         <p class="description"><?php echo esc_html($args['description']); ?></p>
-        <?php
+<?php
+    }
+
+    public function render_redirects_field()
+    {
+        $options = get_option($this->option_name);
+        $redirects = isset($options['redirects']) ? $options['redirects'] : [];
+
+        $args = [
+            'option_name' => $this->option_name,
+            'redirects' => $redirects
+        ];
+
+        require_once plugin_dir_path(__FILE__) . 'views/redirects-field.php';
+    }
+
+    public function add_redirect_field()
+    {
+        check_ajax_referer('add_redirect_field');
+
+        if (!current_user_can('manage_options')) {
+            wp_die(-1);
+        }
+
+        $index = isset($_POST['index']) ? intval($_POST['index']) : 0;
+        $redirect = ['from' => '', 'to' => ''];
+
+        $args = [
+            'option_name' => $this->option_name,
+            'index' => $index,
+            'redirect' => $redirect
+        ];
+
+        ob_start();
+        require_once plugin_dir_path(__FILE__) . 'views/single-redirect.php';
+        $html = ob_get_clean();
+
+        wp_send_json_success($html);
     }
 }

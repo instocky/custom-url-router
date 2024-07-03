@@ -15,6 +15,9 @@ if (!defined('ABSPATH')) {
                 <li class="custom-url-router-menu-item">
                     <a href="#admin-interface">Admin Interface</a>
                 </li>
+                <li class="custom-url-router-menu-item">
+                    <a href="#redirects">Redirects</a>
+                </li>
             </ul>
         </div>
         
@@ -30,6 +33,11 @@ if (!defined('ABSPATH')) {
                 <div id="admin-interface" class="custom-url-router-section">
                     <h2>Admin Interface</h2>
                     <?php do_settings_sections('custom-url-router-admin'); ?>
+                </div>
+                
+                <div id="redirects" class="custom-url-router-section">
+                    <h2>Redirects</h2>
+                    <?php do_settings_sections('custom-url-router-redirects'); ?>
                 </div>
                 
                 <?php submit_button('Save Settings'); ?>
