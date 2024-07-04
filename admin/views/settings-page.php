@@ -3,46 +3,60 @@
 if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly
 }
+
+$custom_url_router = new IC_CustomURLRouter();
+$redirects = $custom_url_router->get_redirects();
 ?>
-<div class="wrap custom-url-router-admin" x-data="{ activeTab: 'content-management' }">
-    <h1 class="text-2xl font-bold mb-6"><?php echo esc_html(get_admin_page_title()); ?></h1>
-    
-    <div class="custom-url-router-container">
-        <div class="custom-url-router-sidebar">
-            <ul class="custom-url-router-menu">
-                <li class="custom-url-router-menu-item" :class="{ 'active': activeTab === 'content-management' }">
-                    <a href="#content-management" @click.prevent="activeTab = 'content-management'">Content Management</a>
-                </li>
-                <li class="custom-url-router-menu-item" :class="{ 'active': activeTab === 'admin-interface' }">
-                    <a href="#admin-interface" @click.prevent="activeTab = 'admin-interface'">Admin Interface</a>
-                </li>
-                <li class="custom-url-router-menu-item" :class="{ 'active': activeTab === 'redirects' }">
-                    <a href="#redirects" @click.prevent="activeTab = 'redirects'">Redirects</a>
-                </li>
-            </ul>
+<div class="flex flex-col space-y-6 p-6" x-data="{ activeTab: 'content-management' }">
+    <h1 class="text-2xl font-bold"><?php echo esc_html(get_admin_page_title()); ?></h1>
+
+    <div class="flex">
+        <div class="w-1/4 pr-6">
+            <!-- Навигация -->
+            <nav class="flex flex-col space-y-2">
+                <a href="#" @click.prevent="activeTab = 'content-management'" :class="{ 'bg-blue-500 text-white': activeTab === 'content-management' }" class="px-4 py-2 rounded hover:bg-blue-100">Content Management</a>
+                <a href="#" @click.prevent="activeTab = 'admin-interface'" :class="{ 'bg-blue-500 text-white': activeTab === 'admin-interface' }" class="px-4 py-2 rounded hover:bg-blue-100">Admin Interface</a>
+                <a href="#" @click.prevent="activeTab = 'redirects'" :class="{ 'bg-blue-500 text-white': activeTab === 'redirects' }" class="px-4 py-2 rounded hover:bg-blue-100">Redirects</a>
+            </nav>
         </div>
-        
-        <div class="custom-url-router-content">
-            <form action="options.php" method="post">
-                <?php settings_fields('custom_url_router_settings'); ?>
-                
-                <div x-show="activeTab === 'content-management'" class="custom-url-router-section">
-                    <h2>Content Management</h2>
-                    <?php do_settings_sections('custom-url-router-content'); ?>
+
+        <div class="w-3/4">
+            <!-- Контент -->
+            <div x-show="activeTab === 'content-management'">
+                <h2 class="text-xl font-semibold mb-4">Content Management</h2>
+                <?php do_settings_sections('custom-url-router-content'); ?>
+            </div>
+
+            <div x-show="activeTab === 'admin-interface'" x-cloak>
+                <h2 class="text-xl font-semibold mb-4">Admin Interface</h2>
+                <?php do_settings_sections('custom-url-router-admin'); ?>
+            </div>
+
+            <div x-show="activeTab === 'redirects'" x-cloak>
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold mb-2">Текущие редиректы</h3>
+                    <div class="overflow-x-auto bg-white shadow-md rounded-lg">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">От</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">К</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <?php foreach ($redirects as $from => $to) : ?>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><?php echo esc_html($from); ?></td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><?php echo esc_html($to); ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-                
-                <div x-show="activeTab === 'admin-interface'" class="custom-url-router-section">
-                    <h2>Admin Interface</h2>
-                    <?php do_settings_sections('custom-url-router-admin'); ?>
-                </div>
-                
-                <div x-show="activeTab === 'redirects'" class="custom-url-router-section">
-                    <h2>Redirects</h2>
-                    <?php do_settings_sections('custom-url-router-redirects'); ?>
-                </div>
-                
-                <?php submit_button('Save Settings'); ?>
-            </form>
+            </div>
         </div>
     </div>
+
+    <?php submit_button('Save Settings', 'primary', 'submit', true, ['class' => 'mt-6']); ?>
 </div>
