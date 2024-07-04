@@ -1,46 +1,22 @@
-(function ($) {
-    'use strict';
+$(document).ready(function () {
+    var $redirectTable = $('.wp-list-table');
+    var redirectCount = $redirectTable.find('tbody tr').length;
 
-    $(document).ready(function () {
-        console.log('Custom URL Router admin script loaded 5000');
-        
-        // Переключение между вкладками
-        $('.custom-url-router-menu-item a').on('click', function (e) {
-            e.preventDefault();
-            var target = $(this).attr('href');
+    $('#add-redirect').on('click', function (e) {
+        e.preventDefault();
+        var newIndex = redirectCount++;
 
-            $('.custom-url-router-menu-item').removeClass('active');
-            $(this).parent().addClass('active');
+        var newRow = '<tr>' +
+            '<td><input type="text" name="' + customUrlRouterData.optionName + '[redirects][' + newIndex + '][from]" class="regular-text"></td>' +
+            '<td><input type="text" name="' + customUrlRouterData.optionName + '[redirects][' + newIndex + '][to]" class="regular-text"></td>' +
+            '<td><button type="button" class="button-secondary remove-redirect" data-index="' + newIndex + '">Удалить</button></td>' +
+            '</tr>';
 
-            $('.custom-url-router-section').hide();
-            $(target).show();
-        });
-
-        // Показываем первый раздел по умолчанию
-        $('.custom-url-router-menu-item:first-child a').click();
-
-        // Обработка добавления редиректа
-        var redirectCount = $('.redirect-row').length;
-
-        $('button[name="add_redirect"]').on('click', function (e) {
-            e.preventDefault();
-            var newIndex = redirectCount++;
-
-            $.post(ajaxurl, {
-                action: 'add_redirect_field',
-                index: newIndex,
-                _wpnonce: customUrlRouterData.nonce // Предполагается, что nonce передается через localize_script
-            }, function (response) {
-                if (response.success) {
-                    $('#custom-url-router-redirects').append(response.data);
-                }
-            });
-        });
-
-        // Обработка удаления редиректа
-        $(document).on('click', '.remove-redirect', function (e) {
-            e.preventDefault();
-            $(this).closest('.redirect-row').remove();
-        });
+        $redirectTable.find('tbody').append(newRow);
     });
-})(jQuery);
+
+    $(document).on('click', '.remove-redirect', function (e) {
+        e.preventDefault();
+        $(this).closest('tr').remove();
+    });
+});

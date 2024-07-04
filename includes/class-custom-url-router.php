@@ -22,6 +22,7 @@ class IC_CustomURLRouter
      */
     private $redirects = [
         'parent/' => 'parent/slugRegistry/',
+        '0704-2/' => 'parent/slugRegistry/',
     ];
     /**
      * Массив слагов страниц, где нужно подключить Tailwind и Alpine.
@@ -111,16 +112,16 @@ class IC_CustomURLRouter
     /**
      * Подключает Tailwind CSS и Alpine.js на указанных страницах
      */
-     public function enqueue_tailwind_alpine()
-     {
-         global $wp;
-         $current_slug = trailingslashit($wp->request);
- 
-         if (in_array(rtrim($current_slug, '/'), $this->tailwind_alpine_slugs)) {
+    public function enqueue_tailwind_alpine()
+    {
+        global $wp;
+        $current_slug = trailingslashit($wp->request);
+
+        if (in_array(rtrim($current_slug, '/'), $this->tailwind_alpine_slugs)) {
             wp_enqueue_style('tailwindcss', 'https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css', [], null);
             wp_enqueue_script('alpinejs', 'https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js', [], null, true);
         }
-     }
+    }
     /**
      * Активация плагина.
      * Сбрасывает правила перезаписи WordPress.
@@ -133,7 +134,7 @@ class IC_CustomURLRouter
             'use_cdn' => true
         );
         add_option('custom_url_router_settings', $default_options);
-        
+
         $instance = new self();
         $instance->register_routes();
         flush_rewrite_rules();
@@ -147,5 +148,10 @@ class IC_CustomURLRouter
     public static function deactivate()
     {
         flush_rewrite_rules();
+    }
+
+    public function get_redirects()
+    {
+        return $this->redirects;
     }
 }

@@ -53,7 +53,13 @@ class PluginSettings
      */
     public function register_settings()
     {
-        register_setting($this->option_name, $this->option_name);
+        register_setting(
+            $this->option_name,
+            $this->option_name,
+            [
+                'sanitize_callback' => [$this, 'sanitize_settings']
+            ]
+        );
 
         // Content Management Section
         add_settings_section(
@@ -89,20 +95,20 @@ class PluginSettings
             ['label_for' => 'admin_customization', 'description' => 'Enable admin interface customization.']
         );
 
-        add_settings_field(
-            'redirects',
-            'Redirects',
-            [$this, 'render_redirects_field'],
-            'custom-url-router-redirects',
-            'custom_url_router_redirects'
-        );
-
         // Redirects Section
         add_settings_section(
             'custom_url_router_redirects',
             '',
             null,
             'custom-url-router-redirects'
+        );
+
+        add_settings_field(
+            'redirects',
+            'Redirects',
+            [$this, 'render_redirects_field'],
+            'custom-url-router-redirects',
+            'custom_url_router_redirects'
         );
     }
 
@@ -114,7 +120,25 @@ class PluginSettings
      */
     public function sanitize_settings($input)
     {
-        return $input;
+        $sanitized_input = [];
+
+        // Санитизация переключателей
+        $sanitized_input['custom_content_types'] = isset($input['custom_content_types']) ? true : false;
+        $sanitized_input['admin_customization'] = isset($input['admin_customization']) ? true : false;
+
+        // Санитизация редиректов
+        $sanitized_input['redirects'] = [];
+        if (isset($input['redirects']['from']) && isset($input['redirects']['to'])) {
+            $froms = $input['redirects']['from'];
+            $tos = $input['redirects']['to'];
+            foreach ($froms as $index => $from) {
+                if (!empty($from) && !empty($tos[$index])) {
+                    $sanitized_input['redirects'][esc_url_raw($from)] = esc_url_raw($tos[$index]);
+                }
+            }
+        }
+
+        return $sanitized_input;
     }
 
     /**
@@ -164,6 +188,11 @@ class PluginSettings
 
         wp_enqueue_style('custom-url-router-admin', plugin_dir_url(__FILE__) . 'css/style.css', [], '1.0.0');
         wp_enqueue_script('custom-url-router-admin', plugin_dir_url(__FILE__) . 'js/script.js', ['jquery'], '1.0.0', true);
+
+        wp_localize_script('custom-url-router-admin', 'customUrlRouterData', [
+            'nonce' => wp_create_nonce('add_redirect_field'),
+            'optionName' => $this->option_name
+        ]);
     }
 
     public function render_switch_field($args)
@@ -182,8 +211,8 @@ class PluginSettings
 
     public function render_redirects_field()
     {
-        $options = get_option($this->option_name);
-        $redirects = isset($options['redirects']) ? $options['redirects'] : [];
+        $custom_url_router = new IC_CustomURLRouter();
+        $redirects = $custom_url_router->get_redirects();
 
         $args = [
             'option_name' => $this->option_name,
@@ -192,6 +221,8 @@ class PluginSettings
 
         require_once plugin_dir_path(__FILE__) . 'views/redirects-field.php';
     }
+
+
 
     public function add_redirect_field()
     {
