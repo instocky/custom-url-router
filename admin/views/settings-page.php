@@ -13,14 +13,23 @@ $redirects = $custom_url_router->get_redirects();
     <div class="flex">
         <div class="w-1/4 pr-6">
             <!-- Навигация -->
-            <nav class="flex flex-col space-y-2">
-                <a href="#" @click.prevent="activeTab = 'content-management'" :class="{ 'bg-blue-500 text-white': activeTab === 'content-management' }" class="px-4 py-2 rounded hover:bg-blue-100">Content Management</a>
-                <a href="#" @click.prevent="activeTab = 'admin-interface'" :class="{ 'bg-blue-500 text-white': activeTab === 'admin-interface' }" class="px-4 py-2 rounded hover:bg-blue-100">Admin Interface</a>
-                <a href="#" @click.prevent="activeTab = 'redirects'" :class="{ 'bg-blue-500 text-white': activeTab === 'redirects' }" class="px-4 py-2 rounded hover:bg-blue-100">Redirects</a>
+            <nav class="flex flex-col space-y-2 text-xl">
+                <a href="#" @click.prevent="activeTab = 'content-management'" :class="{ 
+           'font-bold text-black border-r-[3px] border-blue-700': activeTab === 'content-management', 
+           'text-gray-700 hover:bg-blue-100': activeTab !== 'content-management' 
+       }" class="px-4 py-2 rounded-l transition duration-200">Content Management</a>
+                <a href="#" @click.prevent="activeTab = 'admin-interface'" :class="{ 
+           'font-bold text-black border-r-[3px] border-blue-700': activeTab === 'admin-interface', 
+           'text-gray-700 hover:bg-blue-100': activeTab !== 'admin-interface' 
+       }" class="px-4 py-2 rounded-l transition duration-200">Admin Interface</a>
+                <a href="#" @click.prevent="activeTab = 'redirects'" :class="{ 
+           'font-bold text-black border-r-[3px] border-blue-700': activeTab === 'redirects', 
+           'text-gray-700 hover:bg-blue-100': activeTab !== 'redirects' 
+       }" class="px-4 py-2 rounded-l transition duration-200">Redirects</a>
             </nav>
         </div>
 
-        <div class="w-3/4">
+        <div class="w-3/4 border-l-4 border-gray-200 pl-4">
             <!-- Контент -->
             <div x-show="activeTab === 'content-management'">
                 <h2 class="text-xl font-semibold mb-4">Content Management</h2>
